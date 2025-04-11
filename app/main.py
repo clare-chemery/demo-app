@@ -14,6 +14,8 @@ from preswald import (
     table,
     text,
     topbar,
+    connect,
+    get_df
 )
 
 
@@ -157,11 +159,11 @@ def render_header():
 
 @workflow.atom()
 def dump_out_legos():
-    # lego_pile = get_df("lego_pile")
+    connect()
+    lego_pile = get_df("lego_pile")
     text(
         "You walk into the challenge room and every inch of the floor is **covered** in Legos."
     )
-    lego_pile = pd.read_csv("data/lego_pile.csv")
     text(f"## There are {len(lego_pile)} Legos! 😱😨")
     table(lego_pile.head(100))
     separator()
