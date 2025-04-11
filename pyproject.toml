@@ -1,0 +1,13 @@
+[project]
+name = "demo-app"
+version = "0.1.0"
+description = "Demo app using the Preswald library"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.2.4",
+    "pandas>=2.2.3",
+    "plotly>=5.24.1",
+    "preswald>=0.1.51",
+    "ruff>=0.11.5",
+]
