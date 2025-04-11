@@ -1,4 +1,4 @@
-# Demo App
+# The Lego Challenge
 
 A Python-based demo application using the Preswald library.
 
