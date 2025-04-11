@@ -20,7 +20,7 @@ files. Only this README.md and the pyproject.toml should be edited manually.
 The structure of the `app/` subdirectory is taken from the `preswald` library. It contains:
 * `preswald.toml`: project config and styling
 * `main.py`: main script of the app
-* `data/lego_pile.csv`: cleaned data to be used by the app 
+* `data/lego_pile_reduced.csv`: cleaned data to be used by the app 
 * `images/`: image files referenced in the styling file
 
 

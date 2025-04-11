@@ -15,7 +15,7 @@ from preswald import (
     text,
     topbar,
     connect,
-    get_df
+    get_df,
 )
 
 
