@@ -201,7 +201,7 @@ def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
 
         # Get one random minifig head for visual interest
         token_minifig = dump_out_legos[
-            (dump_out_legos.part_cat_name == "Minifigs")
+            (dump_out_legos.part_cat_name == "Minifig Heads")
             & (dump_out_legos.img_url.notna())
         ].sample(1)
 
@@ -222,7 +222,7 @@ def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
             featured_enemy = minifigs_vanquished.dropna().iloc[0]
             text("### 🏆 Featured Enemy:")
             text(featured_enemy["part_name"])
-            image(featured_enemy["img_url"], alt=featured_enemy["part_name"])
+            image(featured_enemy["img_url"], alt=featured_enemy["part_name"], size=0.7)
 
         damage = calculate_damage(legos_stepped_on)
         text(f"## Total Damage Taken: {damage}")
