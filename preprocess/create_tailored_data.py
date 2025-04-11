@@ -64,8 +64,9 @@ def main():
 
     # ------ Save to csv ------
     logging.info("Saving to csv.")
-    lego_pile.to_csv(
-        Path(__file__).parent.parent / "app/data/lego_pile.csv", index=False
+    lego_pile.to_csv(Path(__file__).parent / "data/lego_pile.csv", index=False)
+    lego_pile.sample(10000).to_csv(
+        Path(__file__).parent.parent / "app/data/lego_pile_reduced.csv", index=False
     )
 
 

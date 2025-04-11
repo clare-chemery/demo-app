@@ -13,7 +13,7 @@ primaryColor = "#000000"
 
 [data.lego_pile]
 type = "csv"
-path = "data/lego_pile.csv"
+path = "data/lego_pile_reduced.csv"
 
 [logging]
 level = "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
