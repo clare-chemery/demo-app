@@ -102,13 +102,10 @@ def visualize_lego_colors(legos_stepped_on: pd.DataFrame) -> Figure:
     return fig
 
 
-def get_death_roll(
-    legos_stepped_on: pd.DataFrame, token_minifig: pd.DataFrame
-) -> pd.DataFrame:
+def get_death_roll(legos_stepped_on: pd.DataFrame) -> pd.DataFrame:
     """Get a table of the minifigs/minidolls stepped on
     Args:
         legos_stepped_on: subset of the lego pile
-        token_minifig: token minifig to be added to the death roll if no minifigs are stepped on
     Returns:
         death_roll: Minifigs/Minidolls (and heads) stepped on
     """
@@ -119,9 +116,6 @@ def get_death_roll(
             for name in legos_stepped_on.part_cat_name
         ]
     ][["part_name", "img_url"]]
-
-    if len(death_roll.dropna()) == 0:
-        death_roll = pd.concat([death_roll, token_minifig])
     return death_roll
 
 
@@ -201,11 +195,15 @@ def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
         num_legos_stepped_on = get_num_legos_stepped_on(choose_shoe_size)
         legos_stepped_on = dump_out_legos.sample(num_legos_stepped_on)
 
-        # Get one random minifig head for visual interest
+        # Get one random minifig head
         token_minifig = dump_out_legos[
             (dump_out_legos.part_cat_name == "Minifig Heads")
             & (dump_out_legos.img_url.notna())
         ].sample(1)
+
+        # Add a random minifig to legos_stepped_on (in case no minifigs are stepped on)
+        legos_stepped_on = pd.concat([legos_stepped_on, token_minifig])
+        num_legos_stepped_on += 1
 
         text(f"# 💥💥You stepped on {num_legos_stepped_on} legos!💥💥", size=50)
 
@@ -214,13 +212,14 @@ def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
         plotly(colors_fig)
 
         # Show Minifigs vanquished with step
-        minifigs_vanquished = get_death_roll(legos_stepped_on, token_minifig)
+        minifigs_vanquished = get_death_roll(legos_stepped_on)
         text(
             f"## **You vanquished {len(minifigs_vanquished)} Minifig{'s' if len(minifigs_vanquished) > 1 else ''} 💀⚔️**"
         )
         text("_(victorious trumpet sounds)_")
 
         if len(minifigs_vanquished.dropna()) > 0:
+            # Get the first minifig in the death roll that has an image
             featured_enemy = minifigs_vanquished.dropna().iloc[0]
             text("### 🏆 Featured Enemy:")
             text(featured_enemy["part_name"])
@@ -228,7 +227,7 @@ def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
 
         damage = calculate_damage(legos_stepped_on)
         text(f"## Total Damage Taken: {damage}")
-        alert("NOTE: Damage calculation is 1 point per Lego, 2 points per Duplo.")
+        alert("Damage calculation is 1 point per Lego, 2 points per Duplo.")
 
 
 # Execute the workflow
