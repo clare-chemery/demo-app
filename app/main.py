@@ -1,5 +1,5 @@
-import plotly.express as px
 import pandas as pd
+import plotly.express as px
 from numpy.random import randint
 from plotly.graph_objects import Figure
 
@@ -7,6 +7,8 @@ from preswald import (
     Workflow,
     alert,
     button,
+    connect,
+    get_df,
     image,
     plotly,
     selectbox,
@@ -14,8 +16,6 @@ from preswald import (
     table,
     text,
     topbar,
-    connect,
-    get_df,
 )
 
 
@@ -183,13 +183,13 @@ def choose_shoe_size() -> int:
 
 @workflow.atom(dependencies=["choose_shoe_size"])
 def take_a_step() -> bool:
-    step = button("Take a step")
+    step = button("Take a step", can_be_reclicked=True)
     separator()
     return step
 
 
-@workflow.atom(dependencies=["choose_shoe_size", "take_a_step", "dump_out_legos"])
-def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
+@workflow.atom(dependencies=["take_a_step", "choose_shoe_size", "dump_out_legos"])
+def get_legos_stepped_on(take_a_step, choose_shoe_size, dump_out_legos):
     if take_a_step:
         # Sample the legos stepped on
         num_legos_stepped_on = get_num_legos_stepped_on(choose_shoe_size)
@@ -206,29 +206,42 @@ def render_step_result(take_a_step, choose_shoe_size, dump_out_legos):
         num_legos_stepped_on += 1
 
         text(f"# 💥💥You stepped on {num_legos_stepped_on} legos!💥💥", size=50)
+        return legos_stepped_on
 
-        # Visualize the colors of the legos stepped on
-        colors_fig = visualize_lego_colors(legos_stepped_on)
-        plotly(colors_fig)
 
-        # Show Minifigs vanquished with step
-        minifigs_vanquished = get_death_roll(legos_stepped_on)
-        text(
-            f"## **You vanquished {len(minifigs_vanquished)} Minifig{'s' if len(minifigs_vanquished) > 1 else ''} 💀⚔️**"
+@workflow.atom(dependencies=["get_legos_stepped_on"])
+def render_legos_stepped_on(get_legos_stepped_on):
+    colors_fig = visualize_lego_colors(get_legos_stepped_on)
+    plotly(colors_fig)
+
+
+@workflow.atom(dependencies=["get_legos_stepped_on"])
+def render_death_roll(get_legos_stepped_on):
+    # Show Minifigs vanquished with step
+    minifigs_vanquished = get_death_roll(get_legos_stepped_on)
+    text(
+        f"## **You vanquished {len(minifigs_vanquished)} Minifig{'s' if len(minifigs_vanquished) > 1 else ''} 💀⚔️**"
+    )
+    text("_(victorious trumpet sounds)_")
+
+    if len(minifigs_vanquished.dropna()) > 0:
+        # Get the first minifig in the death roll that has an image
+        featured_enemy = minifigs_vanquished.dropna().iloc[0]
+        text("### 🏆 Featured Enemy:")
+        text(featured_enemy["part_name"])
+        image(
+            featured_enemy["img_url"],
+            alt=featured_enemy["part_name"],
+            size=0.7,
         )
-        text("_(victorious trumpet sounds)_")
 
-        if len(minifigs_vanquished.dropna()) > 0:
-            # Get the first minifig in the death roll that has an image
-            featured_enemy = minifigs_vanquished.dropna().iloc[0]
-            text("### 🏆 Featured Enemy:")
-            text(featured_enemy["part_name"])
-            image(featured_enemy["img_url"], alt=featured_enemy["part_name"], size=0.7)
 
-        damage = calculate_damage(legos_stepped_on)
-        text(f"## Total Damage Taken: {damage}")
-        alert("Damage calculation is 1 point per Lego, 2 points per Duplo.")
+@workflow.atom(dependencies=["get_legos_stepped_on"])
+def render_damage(get_legos_stepped_on):
+    damage = calculate_damage(get_legos_stepped_on)
+    text(f"## Total Damage Taken: {damage}")
+    alert("Damage calculation is 1 point per Lego, 2 points per Duplo.")
 
 
 # Execute the workflow
-restuls = workflow.execute()
+results = workflow.execute()
