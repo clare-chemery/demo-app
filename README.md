@@ -2,7 +2,7 @@
 
 A Python-based demo application using the Preswald library.
 
-To run the app locally, install dependencies, navigate to the app subdirecotry and then use the `preswald` command:
+To run the app locally, install dependencies, navigate to the app subdirectory and then use the `preswald` command:
 
 ```{bash}
 $ uv sync
